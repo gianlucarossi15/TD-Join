@@ -3,7 +3,7 @@ import streamlit as st
 from streamlit_option_menu import option_menu
 import numpy as np
 import matplotlib.pyplot as plt
-from AllenProfile import AllenProfile
+from TD_Join import TD_Join
 import pandas as pd
 
 # Title and description
@@ -116,7 +116,7 @@ if selected == "Augmenting":
             axs2[0].set_ylim(ylim_lower1, ylim_upper1)
             axs2[1].set_ylim(ylim_lower2, ylim_upper2)
 
-            ap = AllenProfile(T_A = value1,m = subsequence_length,T_B = value2,ignore_trivial = False)
+            ap = TD_Join(T_A = value1,m = subsequence_length,T_B = value2,ignore_trivial = False)
             data = ap
 
             seq_A_rect = None

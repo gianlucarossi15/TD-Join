@@ -4,7 +4,7 @@ import numpy as np
 
 from stumpy import core
 
-def AllenProfile(T_A, T_B, m, Allen_relation=None):
+def TD_Join(T_A, T_B, m, Allen_relation=None):
     """
     Compute Time Dependent Matrix Profile TDMP.
 
