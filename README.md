@@ -1,7 +1,8 @@
 # TD-Join: Leveraging Temporal Patterns in Subsequence Joins
 This Website presents TD-Join, a Matrix Profile based tool for discovering recurrent temporal subsequences by enhacing Matrix Profile with temporal reasoning given by Allen's relations.
 
-<iframe src="https://youtu.be/0N61YrglsJI" width="480" height="270" frameBorder="0" class="giphy-embed" allowFullScreen></iframe>
+## Video
+[![alt text](https://img.youtube.com/vi/video-id/0.jpg)](https://www.youtube.com/watch?v=0N61YrglsJI)
 ## Time Dependent Matrix Profile
 ![TDMP](/images/TimeDepedentMatrixProfile.png)
 Each column represents the pair of subsequences adhering to the column's name. By perfoming the minimum operation in each column (for any Allen's relation) we retain the best pair of subsequences for each Allen's relation.
