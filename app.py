@@ -16,17 +16,22 @@ if 'value2' not in st.session_state:
     st.session_state.value2 = None
 
 # Title and description
-st.title("Temporal reasoning of subsequence joins with Allen's relations")
-st.write("This app compares two time series and extract the most similar subsequences in the input time series that follows Allen's interval relations.")
+st.title("TD-Join system for temporal dependencies across time series")
+# st.write("This app compares two time series and extract the most similar subsequences in the input time series that follows Allen's interval relations.")
 
 # Define color mapping for each column
-color_map = {
+color_map_best = {
     'Equals': 'green',  # Best value
     'Overlaps': 'orange',
     'Meets': 'blue',
     'Before': 'red'  # Red
 }
-
+color_map_all = {
+    'Equals': '#90EE90',  # Light Green
+    'Overlaps': '#FFD580',  # Light Orange
+    'Meets': '#ADD8E6',  # Light Blue
+    'Before': '#FFB6C1'  # Light Red/Pink
+}
 # Function to apply styles
 
 
@@ -35,7 +40,6 @@ def get_min_values(df):
     for col in df.columns:
         valid_numbers = [float(x[1]) for x in df[col] if x[1] is not None]
         min_values[col] = min(valid_numbers) if valid_numbers else None
-        print((valid_numbers))
     # print(df.columns)
     # print(df[col][0])
     # print(min_values)
@@ -154,23 +158,23 @@ elif selected == "Augmenting":
                 if key == "Before":
                     axs2[0].axvline(x=seq_A_index, linestyle="dashed", color='red')
                     axs2[1].axvline(x=seq_B_index, linestyle="dashed", color='red')
-                    seq_A_rect = plt.Rectangle((seq_A_index, ylim_lower1), subsequence_length, ylim_upper1 - ylim_lower1, facecolor='red', alpha=0.3)
-                    seq_B_rect = plt.Rectangle((seq_B_index, ylim_lower2), subsequence_length, ylim_upper2 - ylim_lower2, facecolor='red', alpha=0.3)
+                    seq_A_rect = plt.Rectangle((seq_A_index, ylim_lower1), subsequence_length, ylim_upper1 - ylim_lower1, facecolor=color_map_best[key], alpha=0.3)
+                    seq_B_rect = plt.Rectangle((seq_B_index, ylim_lower2), subsequence_length, ylim_upper2 - ylim_lower2, facecolor=color_map_best[key], alpha=0.3)
                 elif key == "Meets":
                     axs2[0].axvline(x=seq_A_index, linestyle="dashed", color='blue')
                     axs2[1].axvline(x=seq_B_index, linestyle="dashed", color='blue')
-                    seq_A_rect = plt.Rectangle((seq_A_index, ylim_lower1), subsequence_length, ylim_upper1 - ylim_lower1, facecolor='blue', alpha=0.3)
-                    seq_B_rect = plt.Rectangle((seq_B_index, ylim_lower2), subsequence_length, ylim_upper2 - ylim_lower2, facecolor='blue', alpha=0.3)
+                    seq_A_rect = plt.Rectangle((seq_A_index, ylim_lower1), subsequence_length, ylim_upper1 - ylim_lower1, facecolor=color_map_best[key], alpha=0.3)
+                    seq_B_rect = plt.Rectangle((seq_B_index, ylim_lower2), subsequence_length, ylim_upper2 - ylim_lower2, facecolor=color_map_best[key], alpha=0.3)
                 elif key == "Equals":
                     axs2[0].axvline(x=seq_A_index, linestyle="dashed", color='green')
                     axs2[1].axvline(x=seq_B_index, linestyle="dashed", color='green')
-                    seq_A_rect = plt.Rectangle((seq_A_index, ylim_lower1), subsequence_length, ylim_upper1 - ylim_lower1, facecolor='green', alpha=0.3)
-                    seq_B_rect = plt.Rectangle((seq_B_index, ylim_lower2), subsequence_length, ylim_upper2 - ylim_lower2, facecolor='green', alpha=0.3)
+                    seq_A_rect = plt.Rectangle((seq_A_index, ylim_lower1), subsequence_length, ylim_upper1 - ylim_lower1, facecolor=color_map_best[key], alpha=0.3)
+                    seq_B_rect = plt.Rectangle((seq_B_index, ylim_lower2), subsequence_length, ylim_upper2 - ylim_lower2, facecolor=color_map_best[key], alpha=0.3)
                 elif key == "Overlaps":
                     axs2[0].axvline(x=seq_A_index, linestyle="dashed", color='orange')
                     axs2[1].axvline(x=seq_B_index, linestyle="dashed", color='orange')
-                    seq_A_rect = plt.Rectangle((seq_A_index, ylim_lower1), subsequence_length, ylim_upper1 - ylim_lower1, facecolor='orange', alpha=0.3)
-                    seq_B_rect = plt.Rectangle((seq_B_index, ylim_lower2), subsequence_length, ylim_upper2 - ylim_lower2, facecolor='orange', alpha=0.3)
+                    seq_A_rect = plt.Rectangle((seq_A_index, ylim_lower1), subsequence_length, ylim_upper1 - ylim_lower1, facecolor=color_map_best[key], alpha=0.3)
+                    seq_B_rect = plt.Rectangle((seq_B_index, ylim_lower2), subsequence_length, ylim_upper2 - ylim_lower2, facecolor=color_map_best[key], alpha=0.3)
                 axs2[0].add_patch(seq_A_rect)
                 axs2[1].add_patch(seq_B_rect)
             st.pyplot(fig2)
@@ -186,11 +190,26 @@ elif selected == "Augmenting":
             df = pd.DataFrame(ap)
             # Get the minimum second value for each column
             min_values = get_min_values(df)
+            # def highlight_min(val, col):
+            #     if val and val[1] == min_values[col]:  # Check if second value matches min
+            #         return f"background-color: {color_map_best[col]}"
+            #     return ""
+            # styled_df = df.style.apply(lambda x: [highlight_min(v, x.name) for v in x], axis=0)
+            # st.header(f"Time-Dependent Matrix Profile")
+            # st.dataframe(styled_df)
             def highlight_min(val, col):
                 if val and val[1] == min_values[col]:  # Check if second value matches min
-                    return f"background-color: {color_map[col]}"
+                    return f"background-color: {color_map_best[col]}"
                 return ""
-            styled_df = df.style.apply(lambda x: [highlight_min(v, x.name) for v in x], axis=0)
+
+            def highlight_col(x):
+                df1 = pd.DataFrame('', index=x.index, columns=x.columns)
+                for col in x.columns:
+                    df1[col] = f'background-color: {color_map_all[col]}'
+                return df1
+
+            styled_df = df.style.apply(highlight_col, axis=None)
+            styled_df = styled_df.apply(lambda x: [highlight_min(v, x.name) for v in x], axis=0)
             st.header(f"Time-Dependent Matrix Profile")
             st.dataframe(styled_df)
     else:
@@ -237,39 +256,44 @@ elif selected == "Filtering":
                 if selected_relation == "Before":
                     axs2[0].axvline(x=seq_A_index, linestyle="dashed", color='red')
                     axs2[1].axvline(x=seq_B_index, linestyle="dashed", color='red')
-                    seq_A_rect = plt.Rectangle((seq_A_index, ylim_lower1), subsequence_length, ylim_upper1 - ylim_lower1, facecolor='red', alpha=0.3)
-                    seq_B_rect = plt.Rectangle((seq_B_index, ylim_lower2), subsequence_length, ylim_upper2 - ylim_lower2, facecolor='red', alpha=0.3)
+                    seq_A_rect = plt.Rectangle((seq_A_index, ylim_lower1), subsequence_length, ylim_upper1 - ylim_lower1, facecolor=color_map_best[selected_relation], alpha=0.3)
+                    seq_B_rect = plt.Rectangle((seq_B_index, ylim_lower2), subsequence_length, ylim_upper2 - ylim_lower2, facecolor=color_map_best[selected_relation], alpha=0.3)
                 elif selected_relation == "Meets":
                     axs2[0].axvline(x=seq_A_index, linestyle="dashed", color='blue')
                     axs2[1].axvline(x=seq_B_index, linestyle="dashed", color='blue')
-                    seq_A_rect = plt.Rectangle((seq_A_index, ylim_lower1), subsequence_length, ylim_upper1 - ylim_lower1, facecolor='blue', alpha=0.3)
-                    seq_B_rect = plt.Rectangle((seq_B_index, ylim_lower2), subsequence_length, ylim_upper2 - ylim_lower2, facecolor='blue', alpha=0.3)
+                    seq_A_rect = plt.Rectangle((seq_A_index, ylim_lower1), subsequence_length, ylim_upper1 - ylim_lower1, facecolor=color_map_best[selected_relation], alpha=0.3)
+                    seq_B_rect = plt.Rectangle((seq_B_index, ylim_lower2), subsequence_length, ylim_upper2 - ylim_lower2, facecolor=color_map_best[selected_relation], alpha=0.3)
                 elif selected_relation == "Equals":
                     axs2[0].axvline(x=seq_A_index, linestyle="dashed", color='green')
                     axs2[1].axvline(x=seq_B_index, linestyle="dashed", color='green')
-                    seq_A_rect = plt.Rectangle((seq_A_index, ylim_lower1), subsequence_length, ylim_upper1 - ylim_lower1, facecolor='green', alpha=0.3)
-                    seq_B_rect = plt.Rectangle((seq_B_index, ylim_lower2), subsequence_length, ylim_upper2 - ylim_lower2, facecolor='green', alpha=0.3)
+                    seq_A_rect = plt.Rectangle((seq_A_index, ylim_lower1), subsequence_length, ylim_upper1 - ylim_lower1, facecolor=color_map_best[selected_relation], alpha=0.3)
+                    seq_B_rect = plt.Rectangle((seq_B_index, ylim_lower2), subsequence_length, ylim_upper2 - ylim_lower2, facecolor= color_map_best[selected_relation], alpha=0.3)
                 elif selected_relation ==  "Overlaps":
                     axs2[0].axvline(x=seq_A_index, linestyle="dashed", color='orange')
                     axs2[1].axvline(x=seq_B_index, linestyle="dashed", color='orange')
-                    seq_A_rect = plt.Rectangle((seq_A_index, ylim_lower1), subsequence_length, ylim_upper1 - ylim_lower1, facecolor='orange', alpha=0.3)
-                    seq_B_rect = plt.Rectangle((seq_B_index, ylim_lower2), subsequence_length, ylim_upper2 - ylim_lower2, facecolor='orange', alpha=0.3)
+                    seq_A_rect = plt.Rectangle((seq_A_index, ylim_lower1), subsequence_length, ylim_upper1 - ylim_lower1, facecolor= color_map_best[selected_relation], alpha=0.3)
+                    seq_B_rect = plt.Rectangle((seq_B_index, ylim_lower2), subsequence_length, ylim_upper2 - ylim_lower2, facecolor= color_map_best[selected_relation], alpha=0.3)
 
                 axs2[0].add_patch(seq_A_rect)
                 axs2[1].add_patch(seq_B_rect)
                 st.pyplot(fig2)
 
-                # df = pd.DataFrame(data, columns=[selected_relation])
-
 
                 min_values = get_min_values(df)
-                print(min_values)
-                print(df.info())
+
                 def highlight_min(val, col):
                     if val and val[1] == min_values[col]:  # Check if second value matches min
-                        return f"background-color: {color_map[col]}"
+                        return f"background-color: {color_map_best[col]}"
                     return ""
-                styled_df = df.style.apply(lambda x: [highlight_min(v, x.name) for v in x], axis=0)
+
+                def highlight_col(x):
+                    df1 = pd.DataFrame('', index=x.index, columns=x.columns)
+                    for col in x.columns:
+                        df1[col] = f'background-color: {color_map_all[col]}'
+                    return df1
+
+                styled_df = df.style.apply(highlight_col, axis=None)
+                styled_df = styled_df.apply(lambda x: [highlight_min(v, x.name) for v in x], axis=0)
                 st.header(f"Time-Dependent Matrix Profile")
                 st.dataframe(styled_df)
 
