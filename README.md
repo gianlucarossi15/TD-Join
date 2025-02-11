@@ -5,6 +5,8 @@ This Website presents TD-Join, a Matrix Profile based tool for discovering recur
 {% include youtube.html id="fHMZUWnqYyQ" %}
 
 [//]: # ([![IMAGE ALT TEXT HERE]&#40;https://img.youtube.com/vi/fHMZUWnqYyQ/0.jpg&#41;]&#40;https://www.youtube.com/watch?v=fHMZUWnqYyQ&#41;)
+## Code
+The code is available at [https://github.com/gianlucarossi15/TD-Join/](https://github.com/gianlucarossi15/TD-Join/tree/main)
 ## Time Dependent Matrix Profile
 ![TDMP](/images/TimeDepedentMatrixProfile.png)
 Each column represents the pair of subsequences adhering to the column's name. By perfoming the minimum operation in each column (for any Allen's relation) we retain the best pair of subsequences for each Allen's relation.
