@@ -24,7 +24,7 @@ Time series are stored in the time-series database InfluxDB. InfluxDB's line pro
 Our TD-Join function, used for performing subsequence joins based on the Time Dependent Matrix Profile along with Allen's relations, constitutes the business layer. 
 
 The presentation layer is dedicated to displaying recurrent temporal patterns.
-
+The paper is available at [https://doi.org/10.1145/3722212.3725137](https://doi.org/10.1145/3722212.3725137).
 This work has been accepted at [Sigmod 2025](https://2025.sigmod.org/index.shtml) demo track.
 
 This  work is funded by the French National Research Agency (ANR) under grant number [ANR-22-CE92-0025-01](https://anr.fr/Projet-ANR-22-CE92-0025).
