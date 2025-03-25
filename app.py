@@ -102,18 +102,18 @@ if selected == "Data import":
                     # Plot for Time Series 1
                     with col1:
                         ax1.plot(st.session_state.value1, label="Time Series 1")
-                        ax1.set_xlabel("Points")
-                        ax1.set_ylabel("Values")
-                        ax1.set_title("Time Series 1")
+                        ax1.set_xlabel("Points",fontsize=16)
+                        ax1.set_ylabel("Values (USD)", fontsize=16)
+                        ax1.set_title(selected_file1.split(".")[0],fontsize=22)
                         ax1.legend()
                         st.pyplot(fig1)
 
                     # Plot for Time Series 2
                     with col2:
                         ax2.plot(st.session_state.value2, label="Time Series 2", color="orange")
-                        ax2.set_xlabel("Points")
-                        ax2.set_ylabel("Values")
-                        ax2.set_title("Time Series 2")
+                        ax2.set_xlabel("Points",fontsize=16)
+                        ax2.set_ylabel("Values (USD)", fontsize=16)
+                        ax2.set_title(selected_file2.split(".")[0],fontsize=22)
                         ax2.legend()
                         st.pyplot(fig2)
     else:
@@ -130,10 +130,10 @@ elif selected == "Augmenting":
             fig2, axs2 = plt.subplots(2, sharex=True, gridspec_kw={'hspace': 0})
             axs2[0].plot(st.session_state.value1)
             axs2[1].plot(st.session_state.value2, c='orange')
-            axs2[1].set_xlabel('Points')
+            axs2[1].set_xlabel('Points',fontsize=12)
 
-            axs2[0].set_ylabel('Values')
-            axs2[1].set_ylabel('Values')
+            axs2[0].set_ylabel("Values (USD)",fontsize=12)
+            axs2[1].set_ylabel("Values (USD)",fontsize=12)
 
             ylim_lower1 = st.session_state.value1.min() - 10
             ylim_upper1 = st.session_state.value1.max() + 10
@@ -225,10 +225,10 @@ elif selected == "Filtering":
             fig2, axs2 = plt.subplots(2, sharex=True, gridspec_kw={'hspace': 0})
             axs2[0].plot(value1)
             axs2[1].plot(value2, c='orange')
-            axs2[1].set_xlabel('Points')
+            axs2[1].set_xlabel('Points',fontsize=12)
 
-            axs2[0].set_ylabel('Values')
-            axs2[1].set_ylabel('Values')
+            axs2[0].set_ylabel('Values (USD)',fontsize=12)
+            axs2[1].set_ylabel('Values (USD)',fontsize=12)
 
 
             ylim_lower1 = value1.min() - 10
