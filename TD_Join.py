@@ -40,8 +40,8 @@ def TD_Join(T_A, T_B, m, Allen_relation=None):
     if T_B.ndim != 1:  # pragma: no cover
         raise ValueError(f"T_B is {T_B.ndim}-dimensional and must be 1-dimensional. ")
 
-    if Allen_relation is not None and Allen_relation not in {"Before","Meets","Equals","Overlaps"}:
-        raise ValueError(f"{Allen_relation} is not a valid Allen's relation. Please choose from 'Before', 'Meets', 'Equals', or 'Overlaps'.")
+    if Allen_relation is not None and Allen_relation not in {"before","meets","equal","overlaps"}:
+        raise ValueError(f"{Allen_relation} is not a valid Allen's relation. Please choose from 'before', 'meets', 'equal', or 'overlaps'.")
 
     core.check_window_size(m, max_size=min(T_A.shape[0], T_B.shape[0]))
     subseq_T_A = core.rolling_window(T_A, m)
