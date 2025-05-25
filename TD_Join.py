@@ -49,10 +49,10 @@ def TD_Join(T_A, T_B, m, Allen_relation=None):
 
     result = []
     dict = {}
-    dict['Before'] = []
-    dict['Meets'] = []
-    dict['Equals'] = []
-    dict['Overlaps'] = []
+    dict['before'] = []
+    dict['meets'] = []
+    dict['equal'] = []
+    dict['overlaps'] = []
     if Allen_relation is None:
         warnings.warn("No Allen's relation is provided. Computing the complete Allen profile.")
         for i, seq_A in enumerate(subseq_T_A):
@@ -61,11 +61,11 @@ def TD_Join(T_A, T_B, m, Allen_relation=None):
             for j, seq_B in enumerate(subseq_T_B):
                 if i == j: #Equals
                     dist = round(float(z_normalized_euclidean_distance(seq_A, seq_B)),5)
-                    dict['Equals'] += [[j, dist]]
+                    dict['equal'] += [[j, dist]]
 
                 elif i+m == j: #Meets
                     dist = round(float(z_normalized_euclidean_distance(seq_A, seq_B)),5)
-                    dict['Meets'] += [[j, dist]]
+                    dict['meets'] += [[j, dist]]
 
                 elif max(i, j) <= min(i + m - 1, j + m - 1) and (i != j): #Overlaps
                     list_O.append([j,float(z_normalized_euclidean_distance(seq_A, seq_B))])
@@ -78,18 +78,18 @@ def TD_Join(T_A, T_B, m, Allen_relation=None):
             for index in range(len(list_O)):
                 if list_O[index][1] == np.min(values):
                     dist = round(np.min(values),5)
-                    dict['Overlaps'] += [[list_O[index][0], float(dist)]]
+                    dict['overlaps'] += [[list_O[index][0], float(dist)]]
                     break
             for index in range(len(list_B)):
                 values = [list_B[index][1] for index in range(len(list_B))]
             for index in range(len(list_B)):
                 if list_B[index][1] == np.min(values):
                     dist = round(np.min(values),5)
-                    dict['Before'] += [[list_B[index][0], float(dist)]]
+                    dict['before'] += [[list_B[index][0], float(dist)]]
                     break
 
 
-    elif Allen_relation=="Before": #ok
+    elif Allen_relation=="before": #ok
 
         for i, seq_A in enumerate(subseq_T_A):
             list = []
@@ -102,32 +102,32 @@ def TD_Join(T_A, T_B, m, Allen_relation=None):
             for index in range(len(list)):
                 if list[index][1] == np.min(values):
                     dist = round(np.min(values),5)
-                    dict['Before'] += [[list[index][0], float(dist)]]
+                    dict['before'] += [[list[index][0], float(dist)]]
                     break
-        if len(dict['Before']) == 0:
+        if len(dict['before']) == 0:
             warnings.warn(f"There are no {Allen_relation} relation and window size {m}."
                           f"Please try a different Allen relation or window size.")
 
-    elif Allen_relation=="Meets": #ok
+    elif Allen_relation=="meets": #ok
         for i, seq_A in enumerate(subseq_T_A):
             for j, seq_B in enumerate(subseq_T_B):
                 # if upper hand of seq is equal to lower hand of seq_B
                 if i+m == j:
                     dist = round(float(z_normalized_euclidean_distance(seq_A, seq_B)),5)
-                    dict['Meets'] += [[j, dist]]
-        if len(dict['Meets']) == 0:
+                    dict['meets'] += [[j, dist]]
+        if len(dict['meets']) == 0:
             warnings.warn(f"There are no {Allen_relation} relation and window size {m}."
                           f"Please try a different Allen relation or window size.")
 
-    elif Allen_relation=="Equals": #ok
+    elif Allen_relation=="equal": #ok
         for i, seq_A in enumerate(subseq_T_A):
             for j, seq_B in enumerate(subseq_T_B):
                 # if seq upper hand is equal to seq_B lower hand
                 if i == j:
                     dist = round(float(z_normalized_euclidean_distance(seq_A, seq_B)),5)
-                    dict['Equals'] += [[j, dist]]
+                    dict['equal'] += [[j, dist]]
 
-    elif Allen_relation=="Overlaps": #ok
+    elif Allen_relation=="overlaps": #ok
         for i, seq_A in enumerate(subseq_T_A):
             list = []
             for j, seq_B in enumerate(subseq_T_B):
@@ -138,9 +138,9 @@ def TD_Join(T_A, T_B, m, Allen_relation=None):
             for index in range(len(list)):
                 if list[index][1] == np.min(values):
                     dist = round(np.min(values),5)
-                    dict['Overlaps'] += [[list[index][0], float(dist)]]
+                    dict['overlaps'] += [[list[index][0], float(dist)]]
                     break
-        if len(dict['Before']) == 0:
+        if len(dict['overlaps']) == 0:
             warnings.warn(f"There are no {Allen_relation} relation and window size {m}."
                           f"Please try a different Allen relation or window size.")
     return dict

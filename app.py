@@ -21,16 +21,16 @@ st.title("TD-Join system for temporal dependencies across time series")
 
 # Define color mapping for each column
 color_map_best = {
-    'Equals': 'green',  # Best value
-    'Overlaps': 'orange',
-    'Meets': 'blue',
-    'Before': 'red'  # Red
+    'equal': 'green',  # Best value
+    'overlaps': 'orange',
+    'meets': 'blue',
+    'before': 'red'  # Red
 }
 color_map_all = {
-    'Equals': '#90EE90',  # Light Green
-    'Overlaps': '#FFD580',  # Light Orange
-    'Meets': '#ADD8E6',  # Light Blue
-    'Before': '#FFB6C1'  # Light Red/Pink
+    'equal': '#90EE90',  # Light Green
+    'overlaps': '#FFD580',  # Light Orange
+    'meets': '#ADD8E6',  # Light Blue
+    'before': '#FFB6C1'  # Light Red/Pink
 }
 # Function to apply styles
 
@@ -58,7 +58,7 @@ def load_time_series(file):
         return None
 
 # Dropdown menu for Allen's interval relations  (simplified names)
-relations = ["Before","Meets","Equals","Overlaps"]
+relations = ["before","meets","equal","overlaps"]
 algorithms = ["TD_Join (our)","STAMP","STOMP"]
 
 selected = option_menu(
@@ -155,22 +155,22 @@ elif selected == "Augmenting":
                 values = np.array(values)[:, 1]
                 seq_A_index = np.argmin(values)
                 seq_B_index = ap[key][np.argmin(values)][0]
-                if key == "Before":
+                if key == "before":
                     axs2[0].axvline(x=seq_A_index, linestyle="dashed", color='red')
                     axs2[1].axvline(x=seq_B_index, linestyle="dashed", color='red')
                     seq_A_rect = plt.Rectangle((seq_A_index, ylim_lower1), subsequence_length, ylim_upper1 - ylim_lower1, facecolor=color_map_best[key], alpha=0.3)
                     seq_B_rect = plt.Rectangle((seq_B_index, ylim_lower2), subsequence_length, ylim_upper2 - ylim_lower2, facecolor=color_map_best[key], alpha=0.3)
-                elif key == "Meets":
+                elif key == "meets":
                     axs2[0].axvline(x=seq_A_index, linestyle="dashed", color='blue')
                     axs2[1].axvline(x=seq_B_index, linestyle="dashed", color='blue')
                     seq_A_rect = plt.Rectangle((seq_A_index, ylim_lower1), subsequence_length, ylim_upper1 - ylim_lower1, facecolor=color_map_best[key], alpha=0.3)
                     seq_B_rect = plt.Rectangle((seq_B_index, ylim_lower2), subsequence_length, ylim_upper2 - ylim_lower2, facecolor=color_map_best[key], alpha=0.3)
-                elif key == "Equals":
+                elif key == "equal":
                     axs2[0].axvline(x=seq_A_index, linestyle="dashed", color='green')
                     axs2[1].axvline(x=seq_B_index, linestyle="dashed", color='green')
                     seq_A_rect = plt.Rectangle((seq_A_index, ylim_lower1), subsequence_length, ylim_upper1 - ylim_lower1, facecolor=color_map_best[key], alpha=0.3)
                     seq_B_rect = plt.Rectangle((seq_B_index, ylim_lower2), subsequence_length, ylim_upper2 - ylim_lower2, facecolor=color_map_best[key], alpha=0.3)
-                elif key == "Overlaps":
+                elif key == "overlaps":
                     axs2[0].axvline(x=seq_A_index, linestyle="dashed", color='orange')
                     axs2[1].axvline(x=seq_B_index, linestyle="dashed", color='orange')
                     seq_A_rect = plt.Rectangle((seq_A_index, ylim_lower1), subsequence_length, ylim_upper1 - ylim_lower1, facecolor=color_map_best[key], alpha=0.3)
@@ -253,22 +253,22 @@ elif selected == "Filtering":
 
 
 
-                if selected_relation == "Before":
+                if selected_relation == "before":
                     axs2[0].axvline(x=seq_A_index, linestyle="dashed", color='red')
                     axs2[1].axvline(x=seq_B_index, linestyle="dashed", color='red')
                     seq_A_rect = plt.Rectangle((seq_A_index, ylim_lower1), subsequence_length, ylim_upper1 - ylim_lower1, facecolor=color_map_best[selected_relation], alpha=0.3)
                     seq_B_rect = plt.Rectangle((seq_B_index, ylim_lower2), subsequence_length, ylim_upper2 - ylim_lower2, facecolor=color_map_best[selected_relation], alpha=0.3)
-                elif selected_relation == "Meets":
+                elif selected_relation == "meets":
                     axs2[0].axvline(x=seq_A_index, linestyle="dashed", color='blue')
                     axs2[1].axvline(x=seq_B_index, linestyle="dashed", color='blue')
                     seq_A_rect = plt.Rectangle((seq_A_index, ylim_lower1), subsequence_length, ylim_upper1 - ylim_lower1, facecolor=color_map_best[selected_relation], alpha=0.3)
                     seq_B_rect = plt.Rectangle((seq_B_index, ylim_lower2), subsequence_length, ylim_upper2 - ylim_lower2, facecolor=color_map_best[selected_relation], alpha=0.3)
-                elif selected_relation == "Equals":
+                elif selected_relation == "equal":
                     axs2[0].axvline(x=seq_A_index, linestyle="dashed", color='green')
                     axs2[1].axvline(x=seq_B_index, linestyle="dashed", color='green')
                     seq_A_rect = plt.Rectangle((seq_A_index, ylim_lower1), subsequence_length, ylim_upper1 - ylim_lower1, facecolor=color_map_best[selected_relation], alpha=0.3)
                     seq_B_rect = plt.Rectangle((seq_B_index, ylim_lower2), subsequence_length, ylim_upper2 - ylim_lower2, facecolor= color_map_best[selected_relation], alpha=0.3)
-                elif selected_relation ==  "Overlaps":
+                elif selected_relation ==  "overlaps":
                     axs2[0].axvline(x=seq_A_index, linestyle="dashed", color='orange')
                     axs2[1].axvline(x=seq_B_index, linestyle="dashed", color='orange')
                     seq_A_rect = plt.Rectangle((seq_A_index, ylim_lower1), subsequence_length, ylim_upper1 - ylim_lower1, facecolor= color_map_best[selected_relation], alpha=0.3)
