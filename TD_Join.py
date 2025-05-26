@@ -10,10 +10,10 @@ def TD_Join(T_A, T_B, m, Allen_relation=None):
 
     Parameters
     ----------
-    T_A : numpy.ndarray
+    T_A : list of DataPoint
         The time series or sequence for which the matrix profile will be returned
 
-    T_B : numpy.ndarray
+    T_B : list of DataPoint
         The time series or sequence that will be used to annotate T_A. For every
         subsequence in T_A, its nearest neighbor in T_B will be recorded.
 
@@ -22,7 +22,7 @@ def TD_Join(T_A, T_B, m, Allen_relation=None):
 
 
     Allen_relation : str, default None
-        Allen's relation to be computed. Choose from 'Before', 'Meets', 'Equals', or 'Overlaps'.
+        Allen's relation to be computed. Choose from 'before', 'meets', 'equal' or 'overlaps'.
         If None, the complete Allen profile will be computed.
 
     Returns
@@ -32,20 +32,22 @@ def TD_Join(T_A, T_B, m, Allen_relation=None):
     """
 
     T_A = T_A.copy()
-    T_A[np.isinf(T_A)] = np.nan
+    for i in range(len(T_A)):
+        if np.isinf(T_A[i].get_value()):
+            T_A[i].set_value(np.nan)
 
-    if T_A.ndim != 1:  # pragma: no cover
-        raise ValueError(f"T_A is {T_A.ndim}-dimensional and must be 1-dimensional. ")
-
-    if T_B.ndim != 1:  # pragma: no cover
-        raise ValueError(f"T_B is {T_B.ndim}-dimensional and must be 1-dimensional. ")
+    # if T_A.ndim != 2:  # pragma: no cover
+    #     raise ValueError(f"T_A is {T_A.ndim}-dimensional and must be 2-dimensional. ")
+    #
+    # if T_B.ndim != 2:  # pragma: no cover
+    #     raise ValueError(f"T_B is {T_B.ndim}-dimensional and must be 2-dimensional. ")
 
     if Allen_relation is not None and Allen_relation not in {"before","meets","equal","overlaps"}:
         raise ValueError(f"{Allen_relation} is not a valid Allen's relation. Please choose from 'before', 'meets', 'equal', or 'overlaps'.")
 
-    core.check_window_size(m, max_size=min(T_A.shape[0], T_B.shape[0]))
-    subseq_T_A = core.rolling_window(T_A, m)
-    subseq_T_B = core.rolling_window(T_B,  m)
+    core.check_window_size(m, max_size=min(len(T_A), len(T_B)))
+    subseq_T_A = rolling_window(T_A, m)
+    subseq_T_B = rolling_window(T_B,  m)
 
     result = []
     dict = {}
@@ -58,35 +60,40 @@ def TD_Join(T_A, T_B, m, Allen_relation=None):
         for i, seq_A in enumerate(subseq_T_A):
             list_O = [] #list containing the overlapping susbsequences for every subsequence seq_A
             list_B = [] #list containing the before susbsequences for every subsequence seq_A
+
+            sub_T_A_values = [point.get_value() for point in seq_A]
             for j, seq_B in enumerate(subseq_T_B):
-                if i == j: #Equals
-                    dist = round(float(z_normalized_euclidean_distance(seq_A, seq_B)),5)
-                    dict['equal'] += [[j, dist]]
+                sub_T_B_values = [point.get_value() for point in seq_B]
+                first_instant_T_A = seq_A[0].get_timestamp()
+                second_instant_T_A = seq_A[m - 1].get_timestamp()
+                first_instant_T_B = seq_B[0].get_timestamp()
+                second_instant_T_B = seq_B[m - 1].get_timestamp()
 
-                elif i+m == j: #Meets
-                    dist = round(float(z_normalized_euclidean_distance(seq_A, seq_B)),5)
-                    dict['meets'] += [[j, dist]]
+                if first_instant_T_A == first_instant_T_B and second_instant_T_A == second_instant_T_B: #equal
+                    dist = round(z_normalized_euclidean_distance(sub_T_A_values, sub_T_B_values), 5)
+                    dict['equal'].append([i, j, dist])
 
-                elif max(i, j) <= min(i + m - 1, j + m - 1) and (i != j): #Overlaps
-                    list_O.append([j,float(z_normalized_euclidean_distance(seq_A, seq_B))])
+                elif second_instant_T_A + 1 == first_instant_T_B: #meets
+                    dist = round(z_normalized_euclidean_distance(sub_T_A_values, sub_T_B_values), 5)
+                    dict['meets'].append([i, j, dist])
 
-                elif i+m < j: #Before
-                    list_B.append([j,float(z_normalized_euclidean_distance(seq_A, seq_B))])
+                elif (first_instant_T_A != first_instant_T_B and
+                        second_instant_T_A != second_instant_T_B and
+                        first_instant_T_A < second_instant_T_B and
+                        second_instant_T_A > first_instant_T_B): #overlaps
+                    dist = round(z_normalized_euclidean_distance(sub_T_A_values, sub_T_B_values), 5)
+                    list_O.append([i,j, dist])
 
-            for index in range(len(list_O)):
-                values = [list_O[index][1] for index in range(len(list_O))]
-            for index in range(len(list_O)):
-                if list_O[index][1] == np.min(values):
-                    dist = round(np.min(values),5)
-                    dict['overlaps'] += [[list_O[index][0], float(dist)]]
-                    break
-            for index in range(len(list_B)):
-                values = [list_B[index][1] for index in range(len(list_B))]
-            for index in range(len(list_B)):
-                if list_B[index][1] == np.min(values):
-                    dist = round(np.min(values),5)
-                    dict['before'] += [[list_B[index][0], float(dist)]]
-                    break
+                elif second_instant_T_A < first_instant_T_B and second_instant_T_A + 1 != first_instant_T_B: #before
+                    dist = round(z_normalized_euclidean_distance(sub_T_A_values, sub_T_B_values), 5)
+                    list_B.append([i, j, dist])
+
+            if list_O:
+                min_distance_point = min(list_O, key=lambda x: x[2])
+                dict['overlaps'].append([min_distance_point[0], min_distance_point[1], round(min_distance_point[2], 5)])
+            if list_B:
+                min_distance_point = min(list_B, key=lambda x: x[2])
+                dict['before'].append([min_distance_point[0], min_distance_point[1], round(min_distance_point[2], 5)])
 
 
     elif Allen_relation=="before": #ok
@@ -94,55 +101,81 @@ def TD_Join(T_A, T_B, m, Allen_relation=None):
         for i, seq_A in enumerate(subseq_T_A):
             list = []
             for j, seq_B in enumerate(subseq_T_B):
-                # if upper hand of seq is before of lower hand of seq_B
-                if i+m < j:
-                    list.append([j,float(z_normalized_euclidean_distance(seq_A, seq_B))])
-            for index in range(len(list)):
-                values = [list[index][1] for index in range(len(list))]
-            for index in range(len(list)):
-                if list[index][1] == np.min(values):
-                    dist = round(np.min(values),5)
-                    dict['before'] += [[list[index][0], float(dist)]]
-                    break
+                # Compare timestamps instead of indices
+                second_instant_T_A = seq_A[m-1].get_timestamp()
+                first_instant_T_B = seq_B[0].get_timestamp()
+                if second_instant_T_A < first_instant_T_B and second_instant_T_A + 1 != first_instant_T_B:
+                    sub_T_A_values = [point.get_value() for point in seq_A]
+                    sub_T_B_values = [point.get_value() for point in seq_B]
+                    dist = round(z_normalized_euclidean_distance(sub_T_A_values, sub_T_B_values), 5)
+                    list.append([i, j, dist])
+            if list:
+                min_distance_point = min(list, key=lambda x: x[2])
+                dict['before'].append([min_distance_point[0], min_distance_point[1], round(min_distance_point[2], 5)])
         if len(dict['before']) == 0:
             warnings.warn(f"There are no {Allen_relation} relation and window size {m}."
                           f"Please try a different Allen relation or window size.")
 
-    elif Allen_relation=="meets": #ok
+    elif Allen_relation == "meets":
         for i, seq_A in enumerate(subseq_T_A):
             for j, seq_B in enumerate(subseq_T_B):
-                # if upper hand of seq is equal to lower hand of seq_B
-                if i+m == j:
-                    dist = round(float(z_normalized_euclidean_distance(seq_A, seq_B)),5)
-                    dict['meets'] += [[j, dist]]
+                second_instant_T_A = seq_A[m - 1].get_timestamp()
+                first_instant_T_B = seq_B[0].get_timestamp()
+                if second_instant_T_A + 1 == first_instant_T_B:
+                    sub_T_A_values = [point.get_value() for point in seq_A]
+                    sub_T_B_values = [point.get_value() for point in seq_B]
+                    dist = round(z_normalized_euclidean_distance(sub_T_A_values, sub_T_B_values), 5)
+                    dict['meets'].append([i, j, dist])
         if len(dict['meets']) == 0:
             warnings.warn(f"There are no {Allen_relation} relation and window size {m}."
                           f"Please try a different Allen relation or window size.")
 
-    elif Allen_relation=="equal": #ok
-        for i, seq_A in enumerate(subseq_T_A):
-            for j, seq_B in enumerate(subseq_T_B):
-                # if seq upper hand is equal to seq_B lower hand
-                if i == j:
-                    dist = round(float(z_normalized_euclidean_distance(seq_A, seq_B)),5)
-                    dict['equal'] += [[j, dist]]
 
-    elif Allen_relation=="overlaps": #ok
+    elif Allen_relation == "equal":
+        for i, seq_A in enumerate(subseq_T_A):
+            sub_T_A_values = [point.get_value() for point in seq_A]
+            for j, seq_B in enumerate(subseq_T_B):
+                first_instant_T_A = seq_A[0].get_timestamp()
+                second_instant_T_A = seq_A[m - 1].get_timestamp()
+                first_instant_T_B = seq_B[0].get_timestamp()
+                second_instant_T_B = seq_B[m - 1].get_timestamp()
+
+                if first_instant_T_A == first_instant_T_B and second_instant_T_A == second_instant_T_B:
+                    sub_T_B_values = [point.get_value() for point in seq_B]
+                    dist = round(z_normalized_euclidean_distance(sub_T_A_values, sub_T_B_values), 5)
+                    dict['equal'].append([i, j, dist])
+
+        if len(dict['equal']) == 0:
+            warnings.warn(f"There are no {Allen_relation} relation and window size {m}."
+                          f"Please try a different Allen relation or window size.")
+
+    elif Allen_relation == "overlaps":
         for i, seq_A in enumerate(subseq_T_A):
             list = []
             for j, seq_B in enumerate(subseq_T_B):
-                if max(i, j) <= min(i + m - 1, j + m - 1) and (i != j):
-                    list.append([j,float(z_normalized_euclidean_distance(seq_A, seq_B))])
-            for index in range(len(list)):
-                values = [list[index][1] for index in range(len(list))]
-            for index in range(len(list)):
-                if list[index][1] == np.min(values):
-                    dist = round(np.min(values),5)
-                    dict['overlaps'] += [[list[index][0], float(dist)]]
-                    break
+                first_instant_T_A = seq_A[0].get_timestamp()
+                second_instant_T_A = seq_A[m - 1].get_timestamp()
+                first_instant_T_B = seq_B[0].get_timestamp()
+                second_instant_T_B = seq_B[m - 1].get_timestamp()
+
+                if (first_instant_T_A != first_instant_T_B and
+                        second_instant_T_A != second_instant_T_B and
+                        first_instant_T_A < second_instant_T_B and
+                        second_instant_T_A > first_instant_T_B):
+
+                    sub_T_A_values = [point.get_value() for point in seq_A]
+                    sub_T_B_values = [point.get_value() for point in seq_B]
+                    dist = round(z_normalized_euclidean_distance(sub_T_A_values, sub_T_B_values), 5)
+                    list.append([float(i), float(j), dist])
+
+            if list:
+                min_distance_point = min(list, key=lambda x: x[2])
+                dict['overlaps'].append([min_distance_point[0], min_distance_point[1], round(min_distance_point[2], 5)])
+
         if len(dict['overlaps']) == 0:
             warnings.warn(f"There are no {Allen_relation} relation and window size {m}."
                           f"Please try a different Allen relation or window size.")
+
     return dict
 
 
@@ -150,3 +183,14 @@ def z_normalized_euclidean_distance(a, b):
     a_z = (a - np.mean(a)) / np.std(a)
     b_z = (b - np.mean(b)) / np.std(b)
     return np.linalg.norm(a_z - b_z)
+
+def rolling_window(array, window_size):
+    """
+    Create a rolling window view of the list of DataPoint objects.
+    """
+    n = len(array) - window_size + 1
+    if n <= 0:
+        raise ValueError("Window size must be smaller than or equal to the length of the array.")
+
+    result = [array[i:i + window_size] for i in range(n)]
+    return result

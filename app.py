@@ -1,9 +1,14 @@
+from datetime import datetime
+
 import streamlit as st
 from streamlit_option_menu import option_menu
 import numpy as np
 import matplotlib.pyplot as plt
+
+from DataPoint import DataPoint
 from TD_Join import TD_Join
 import pandas as pd
+from DataPoint import DataPoint
 
 # Initialize session state variables
 if 'data1' not in st.session_state:
@@ -143,6 +148,14 @@ elif selected == "Augmenting":
             axs2[0].set_ylim(ylim_lower1, ylim_upper1)
             axs2[1].set_ylim(ylim_lower2, ylim_upper2)
 
+            ts1_timestamp = pd.to_datetime(st.session_state.data1.iloc[:, 0])
+            ts1_value = st.session_state.data1.iloc[:, 1].astype(np.float64)
+            ts2_timestamp = pd.to_datetime(st.session_state.data2.iloc[:, 0])
+            ts2_value = st.session_state.data2.iloc[:, 1].astype(np.float64)
+            # Create a list of datapoints for each time series
+            st.session_state.ts1 = [ DataPoint(ts1_timestamp[i],ts1_value[i]) for i in range(len(ts1_timestamp))]
+            st.session_state.ts2 = [ DataPoint(ts2_timestamp[i],ts2_value[i]) for i in range(len(ts2_timestamp))]
+
             ap = TD_Join(T_A=st.session_state.value1, m=subsequence_length, T_B=st.session_state.value2)
             data = ap
 
@@ -237,9 +250,9 @@ elif selected == "Filtering":
             ylim_upper2 = value2.max() + 10
             axs2[0].set_ylim(ylim_lower1, ylim_upper1)
             axs2[1].set_ylim(ylim_lower2, ylim_upper2)
-            ap = TD_Join(T_A = value1,
+            ap = TD_Join(T_A = st.session_state.ts1,
                               m = subsequence_length,
-                              T_B = value2, Allen_relation=selected_relation)
+                              T_B = st.session_state.ts2, Allen_relation=selected_relation)
             if len(ap[selected_relation]) != 0:
                 values = np.array([item[1] for item in ap[selected_relation]])
                 # Find the index of the minimum value
