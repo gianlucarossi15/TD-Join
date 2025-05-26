@@ -12,12 +12,12 @@ The code is available at [https://github.com/gianlucarossi15/TD-Join/](https://g
 Each column represents the pair of subsequences adhering to the column's name. By perfoming the minimum operation in each column (for any Allen's relation) we retain the best pair of subsequences for each Allen's relation.
 
 ## Allen's relation
-<embed src="images/allens.pdf" type="application/pdf">
+<embed src="images/allens.pdf" type="application/pdf" width="100%" height="100%">
 
 In red there are the Allen's relations used to construct the Time Dependent Matrix Profile.
 ## Result
 The following Figure shows the results of our TD-join algorithm, where similar subsequences across two time series are highlighted using a consistent color scheme: green for the *equal* relation, red for *before*, yellow for *overlaps*, and blue for *meets*.
-<embed src="images/subjoin.pdf" type="application/pdf">
+<embed src="images/subjoin.pdf" type="application/pdf" width="100%" height="100%">
 ## Architecture
 ![architecture](/images/systemArchitecture.png)
 
