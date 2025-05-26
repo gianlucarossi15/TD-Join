@@ -8,17 +8,16 @@ This Website presents TD-Join, a Matrix Profile based tool for discovering recur
 ## Code
 The code is available at [https://github.com/gianlucarossi15/TD-Join/](https://github.com/gianlucarossi15/TD-Join/tree/main)
 ## Time Dependent Matrix Profile
-<iframe src="images/subjoin.pdf" width="100%" height="100vh" style="border: none; overflow: hidden;"></iframe>
+![Time Dependent Matrix Profile](/images/allen-profile-solo-new-colors.png)
 Each column represents the pair of subsequences adhering to the column's name. By perfoming the minimum operation in each column (for any Allen's relation) we retain the best pair of subsequences for each Allen's relation.
 
 ## Allen's relation
-<iframe src="images/allens.pdf" width="100%" height="100vh" style="border: none; overflow: hidden;"></iframe>
-
+![Allen's relations](/images/allens.png)
 
 In red there are the Allen's relations used to construct the Time Dependent Matrix Profile.
 ## Result
 The following Figure shows the results of our TD-join algorithm, where similar subsequences across two time series are highlighted using a consistent color scheme: green for the *equal* relation, red for *before*, yellow for *overlaps*, and blue for *meets*.
-<iframe src="images/subjoin.pdf" width="100%" height="100vh" style="border: none; overflow: hidden;"></iframe>
+![Result](/images/subjoin.png)
 ## Architecture
 ![architecture](/images/systemArchitecture.png)
 
