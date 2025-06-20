@@ -3,6 +3,8 @@ import warnings
 import numpy as np
 
 from stumpy import core
+from datetime import timedelta, datetime
+
 
 def TD_Join(T_A, T_B, m, Allen_relation=None):
     """
@@ -64,16 +66,16 @@ def TD_Join(T_A, T_B, m, Allen_relation=None):
             sub_T_A_values = [point.get_value() for point in seq_A]
             for j, seq_B in enumerate(subseq_T_B):
                 sub_T_B_values = [point.get_value() for point in seq_B]
-                first_instant_T_A = seq_A[0].get_timestamp()
-                second_instant_T_A = seq_A[m - 1].get_timestamp()
-                first_instant_T_B = seq_B[0].get_timestamp()
-                second_instant_T_B = seq_B[m - 1].get_timestamp()
+                first_instant_T_A = datetime.fromisoformat(str(seq_A[0].get_timestamp()))
+                second_instant_T_A = datetime.fromisoformat(str(seq_A[m - 1].get_timestamp()))
+                first_instant_T_B = datetime.fromisoformat(str(seq_B[0].get_timestamp()))
+                second_instant_T_B = datetime.fromisoformat(str(seq_B[m - 1].get_timestamp()))
 
                 if first_instant_T_A == first_instant_T_B and second_instant_T_A == second_instant_T_B: #equal
                     dist = round(z_normalized_euclidean_distance(sub_T_A_values, sub_T_B_values), 5)
                     dict['equal'].append([i, j, dist])
 
-                elif second_instant_T_A + 1 == first_instant_T_B: #meets
+                elif second_instant_T_A + get_timedelta(second_instant_T_A) == first_instant_T_B:   #meets
                     dist = round(z_normalized_euclidean_distance(sub_T_A_values, sub_T_B_values), 5)
                     dict['meets'].append([i, j, dist])
 
@@ -84,7 +86,7 @@ def TD_Join(T_A, T_B, m, Allen_relation=None):
                     dist = round(z_normalized_euclidean_distance(sub_T_A_values, sub_T_B_values), 5)
                     list_O.append([i,j, dist])
 
-                elif second_instant_T_A < first_instant_T_B and second_instant_T_A + 1 != first_instant_T_B: #before
+                elif second_instant_T_A < first_instant_T_B and second_instant_T_A + get_timedelta(second_instant_T_A) != first_instant_T_B: #before
                     dist = round(z_normalized_euclidean_distance(sub_T_A_values, sub_T_B_values), 5)
                     list_B.append([i, j, dist])
 
@@ -102,9 +104,9 @@ def TD_Join(T_A, T_B, m, Allen_relation=None):
             list = []
             for j, seq_B in enumerate(subseq_T_B):
                 # Compare timestamps instead of indices
-                second_instant_T_A = seq_A[m-1].get_timestamp()
-                first_instant_T_B = seq_B[0].get_timestamp()
-                if second_instant_T_A < first_instant_T_B and second_instant_T_A + 1 != first_instant_T_B:
+                second_instant_T_A = datetime.fromisoformat(str(seq_A[m - 1].get_timestamp()))
+                first_instant_T_B = datetime.fromisoformat(str(seq_B[0].get_timestamp()))
+                if second_instant_T_A < first_instant_T_B and second_instant_T_A + get_timedelta(second_instant_T_A)  != first_instant_T_B:
                     sub_T_A_values = [point.get_value() for point in seq_A]
                     sub_T_B_values = [point.get_value() for point in seq_B]
                     dist = round(z_normalized_euclidean_distance(sub_T_A_values, sub_T_B_values), 5)
@@ -119,9 +121,9 @@ def TD_Join(T_A, T_B, m, Allen_relation=None):
     elif Allen_relation == "meets":
         for i, seq_A in enumerate(subseq_T_A):
             for j, seq_B in enumerate(subseq_T_B):
-                second_instant_T_A = seq_A[m - 1].get_timestamp()
-                first_instant_T_B = seq_B[0].get_timestamp()
-                if second_instant_T_A + 1 == first_instant_T_B:
+                second_instant_T_A = datetime.fromisoformat(str(seq_A[m - 1].get_timestamp()))
+                first_instant_T_B = datetime.fromisoformat(str(seq_B[0].get_timestamp()))
+                if second_instant_T_A + get_timedelta(second_instant_T_A) == first_instant_T_B:
                     sub_T_A_values = [point.get_value() for point in seq_A]
                     sub_T_B_values = [point.get_value() for point in seq_B]
                     dist = round(z_normalized_euclidean_distance(sub_T_A_values, sub_T_B_values), 5)
@@ -135,14 +137,14 @@ def TD_Join(T_A, T_B, m, Allen_relation=None):
         for i, seq_A in enumerate(subseq_T_A):
             sub_T_A_values = [point.get_value() for point in seq_A]
             for j, seq_B in enumerate(subseq_T_B):
-                first_instant_T_A = seq_A[0].get_timestamp()
-                second_instant_T_A = seq_A[m - 1].get_timestamp()
-                first_instant_T_B = seq_B[0].get_timestamp()
-                second_instant_T_B = seq_B[m - 1].get_timestamp()
+                first_instant_T_A = datetime.fromisoformat(str(seq_A[0].get_timestamp()))
+                second_instant_T_A = datetime.fromisoformat(str(seq_A[m - 1].get_timestamp()))
+                first_instant_T_B = datetime.fromisoformat(str(seq_B[0].get_timestamp()))
+                second_instant_T_B = datetime.fromisoformat(str(seq_B[m - 1].get_timestamp()))
 
                 if first_instant_T_A == first_instant_T_B and second_instant_T_A == second_instant_T_B:
                     sub_T_B_values = [point.get_value() for point in seq_B]
-                    dist = round(z_normalized_euclidean_distance(sub_T_A_values, sub_T_B_values), 5)
+                    dist = round(z_normalized_euclidean_distance(sub_T_A_values, sub_T_B_values), 6)
                     dict['equal'].append([i, j, dist])
 
         if len(dict['equal']) == 0:
@@ -153,10 +155,10 @@ def TD_Join(T_A, T_B, m, Allen_relation=None):
         for i, seq_A in enumerate(subseq_T_A):
             list = []
             for j, seq_B in enumerate(subseq_T_B):
-                first_instant_T_A = seq_A[0].get_timestamp()
-                second_instant_T_A = seq_A[m - 1].get_timestamp()
-                first_instant_T_B = seq_B[0].get_timestamp()
-                second_instant_T_B = seq_B[m - 1].get_timestamp()
+                first_instant_T_A = datetime.fromisoformat(str(seq_A[0].get_timestamp()))
+                second_instant_T_A = datetime.fromisoformat(str(seq_A[m - 1].get_timestamp()))
+                first_instant_T_B = datetime.fromisoformat(str(seq_B[0].get_timestamp()))
+                second_instant_T_B = datetime.fromisoformat(str(seq_B[m - 1].get_timestamp()))
 
                 if (first_instant_T_A != first_instant_T_B and
                         second_instant_T_A != second_instant_T_B and
@@ -194,3 +196,24 @@ def rolling_window(array, window_size):
 
     result = [array[i:i + window_size] for i in range(n)]
     return result
+
+from datetime import timedelta
+from dateutil.relativedelta import relativedelta
+
+def get_timedelta(timestamp):
+    """
+    Determines the granularity of the timestamp based on trailing zeros.
+    Returns the coarsest unit where all finer-grained components are zero.
+    """
+    if timestamp.second != 0:
+        return timedelta(seconds=1)
+    elif timestamp.minute != 0:
+        return timedelta(minutes=1)
+    elif timestamp.hour != 0:
+        return timedelta(hours=1)
+    elif timestamp.day != 1:
+        return timedelta(days=1)
+    elif timestamp.month != 1:
+        return relativedelta(months=1)
+    else:
+        return relativedelta(years=1)
