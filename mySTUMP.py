@@ -1,3 +1,6 @@
+# This code uses STUMP procedure present in the STUMPY library.
+# Copyright 2019 TD Ameritrade. Released under the terms of the 3-Clause BSD license.
+# STUMPY is a trademark of TD Ameritrade IP Company, Inc. All rights reserved.
 import warnings
 from datetime import datetime, timedelta
 
@@ -28,29 +31,28 @@ def MYSTUMP(T_A, T_B, m, Allen_relation=None):
                                   ignore_trivial = False)
                 ta_index = mp[:, 0].argmin()
                 tb_index = mp[ta_index, 1]
-                for j, seq_B in enumerate(subseq_T_B):
-                    if i == j: #equal
-                        dist = round(float(z_normalized_euclidean_distance(seq_A[ta_index: ta_index+m], seq_B[tb_index: tb_index+m])),5)
-                        dict['equal'].append([i, j, dist])
+                if i == j: #equal
+                    dist = round(float(z_normalized_euclidean_distance(np.array(subseq_T_A[ta_index: ta_index+m]), np.array(subseq_T_B[tb_index: tb_index+m]))),5)
+                    dict['equal'].append([i, j, dist])
 
-                    elif i+m == j:   #meets
-                        dist = round(float(z_normalized_euclidean_distance(seq_A[ta_index: ta_index+m], seq_B[tb_index: tb_index+m])),5)
-                        dict['meets'].append([i, j, dist])
+                elif i+m == j:   #meets
+                    dist = round(float(z_normalized_euclidean_distance(np.array(subseq_T_A[ta_index: ta_index+m]), np.array(subseq_T_B[tb_index: tb_index+m]))),5)
+                    dict['meets'].append([i, j, dist])
 
-                    elif max(i, j)  <= min(i + m - 1, j + m - 1) and (i != j):
-                        dist = round(float(z_normalized_euclidean_distance(seq_A[ta_index: ta_index+m], seq_B[tb_index: tb_index+m])),5)
-                        list_O.append([i, j, dist])
+                elif max(i, j)  <= min(i + m - 1, j + m - 1) and (i != j):
+                    dist = round(float(z_normalized_euclidean_distance(np.array(subseq_T_A[ta_index: ta_index+m]), np.array(subseq_T_B[tb_index: tb_index+m]))),5)
+                    list_O.append([i, j, dist])
 
-                    elif i+m < j: #before
-                        dist = round(float(z_normalized_euclidean_distance(seq_A[ta_index: ta_index+m], seq_B[tb_index: tb_index+m])),5)
-                        list_B.append([i, j, dist])
+                elif i+m < j: #before
+                    dist = round(float(z_normalized_euclidean_distance(np.array(subseq_T_A[ta_index: ta_index+m]), np.array(subseq_T_B[tb_index: tb_index+m]))),5)
+                    list_B.append([i, j, dist])
 
-                if list_O:
-                    min_distance_point = min(list_O, key=lambda x: x[2])
-                    dict['overlaps'].append([min_distance_point[0], min_distance_point[1], min_distance_point[2]])
-                if list_B:
-                    min_distance_point = min(list_B, key=lambda x: x[2])
-                    dict['before'].append([min_distance_point[0], min_distance_point[1], min_distance_point[2]])
+            if list_O:
+                min_distance_point = min(list_O, key=lambda x: x[2])
+                dict['overlaps'].append([min_distance_point[0], min_distance_point[1], min_distance_point[2]])
+            if list_B:
+                min_distance_point = min(list_B, key=lambda x: x[2])
+                dict['before'].append([min_distance_point[0], min_distance_point[1], min_distance_point[2]])
     elif Allen_relation=="overlaps":
         for i, seq_A in enumerate(subseq_T_A):
             list_O = [] #list containing the overlapping susbsequences for every subsequence seq_A
@@ -63,8 +65,8 @@ def MYSTUMP(T_A, T_B, m, Allen_relation=None):
                                       ignore_trivial = False)
                     ta_index = mp[:, 0].argmin()
                     tb_index = mp[ta_index, 1]
-                    dist = round(float(z_normalized_euclidean_distance(seq_A[ta_index: ta_index+m], seq_B[tb_index: tb_index+m])),5)
-                    list_O.append([float(i), float(j), dist])
+                    dist = round(float(z_normalized_euclidean_distance(np.array(subseq_T_A[ta_index: ta_index+m]), np.array(subseq_T_B[tb_index: tb_index+m]))),5)
+                    list_O.append([i, j, dist])
             if list_O:
                 min_distance_point = min(list_O, key=lambda x: x[2])
                 dict['overlaps'].append([min_distance_point[0], min_distance_point[1], min_distance_point[2]])
@@ -82,8 +84,8 @@ def MYSTUMP(T_A, T_B, m, Allen_relation=None):
                                       ignore_trivial = False)
                     ta_index = mp[:, 0].argmin()
                     tb_index = mp[ta_index, 1]
-                    dist = round(float(z_normalized_euclidean_distance(seq_A[ta_index: ta_index+m], seq_B[tb_index: tb_index+m])),5)
-                    dict['equal'].append([float(i), float(j), dist])
+                    dist = round(float(z_normalized_euclidean_distance(np.array(subseq_T_A[ta_index: ta_index+m]), np.array(subseq_T_B[tb_index: tb_index+m]))),5)
+                    dict['equal'].append([i, j, dist])
         if len(dict['equal']) == 0:
             warnings.warn(f"There are no {Allen_relation} relation and window size {m}."
                           f"Please try a different Allen relation or window size.")
@@ -98,8 +100,8 @@ def MYSTUMP(T_A, T_B, m, Allen_relation=None):
                                       ignore_trivial = False)
                     ta_index = mp[:, 0].argmin()
                     tb_index = mp[ta_index, 1]
-                    dist = round(float(z_normalized_euclidean_distance(seq_A[ta_index: ta_index+m], seq_B[tb_index: tb_index+m])),5)
-                    dict['meets'].append([float(i), float(j), dist])
+                    dist = round(float(z_normalized_euclidean_distance(np.array(subseq_T_A[ta_index: ta_index+m]), np.array(subseq_T_B[tb_index: tb_index+m]))),5)
+                    dict['meets'].append([i, j, dist])
         if len(dict['meets']) == 0:
             warnings.warn(f"There are no {Allen_relation} relation and window size {m}."
                           f"Please try a different Allen relation or window size.")
@@ -116,8 +118,8 @@ def MYSTUMP(T_A, T_B, m, Allen_relation=None):
                     ta_index = mp[:, 0].argmin()
                     tb_index = mp[ta_index, 1]
 
-                    dist = round(float(z_normalized_euclidean_distance(seq_A[ta_index: ta_index+m], seq_B[tb_index: tb_index+m])),5)
-                    list_B.append([float(i), float(j), dist])
+                    dist = round(float(z_normalized_euclidean_distance(np.array(subseq_T_A[ta_index: ta_index+m]), np.array(subseq_T_B[tb_index: tb_index+m]))),5)
+                    list_B.append([i, j, dist])
 
             if list_B:
                 min_distance_point = min(list_B, key=lambda x: x[2])

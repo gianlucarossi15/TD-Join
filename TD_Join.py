@@ -51,7 +51,7 @@ def TD_Join(T_A, T_B, m, Allen_relation=None):
     subseq_T_A = rolling_window(T_A, m)
     subseq_T_B = rolling_window(T_B,  m)
 
-    result = []
+
     dict = {}
     dict['before'] = []
     dict['meets'] = []
@@ -168,7 +168,7 @@ def TD_Join(T_A, T_B, m, Allen_relation=None):
                     sub_T_A_values = [point.get_value() for point in seq_A]
                     sub_T_B_values = [point.get_value() for point in seq_B]
                     dist = round(z_normalized_euclidean_distance(sub_T_A_values, sub_T_B_values), 5)
-                    list.append([float(i), float(j), dist])
+                    list.append([i, j, dist])
 
             if list:
                 min_distance_point = min(list, key=lambda x: x[2])

@@ -7,6 +7,7 @@ import numpy as np
 import matplotlib.pyplot as plt
 from dotenv import load_dotenv
 
+import mySTAMP
 import mySTUMP
 from DataPoint import DataPoint
 from TD_Join import TD_Join
@@ -94,7 +95,6 @@ def update_dropdowns():
 def get_min_values(df):
     min_values = {}
     for col in df.columns:
-        print(f"Processing column: {col} {(df)}")
         valid_numbers = [float(x[2]) for x in df[col] if x is not None and len(x) > 2 and x[2] is not None]
         min_values[col] = min(valid_numbers) if valid_numbers else None
         # print(f"Column: {col}, Min Value: {min_values[col]}")
@@ -224,6 +224,9 @@ elif selected == "Augmenting":
             elif selected_algorithm == "STUMP":
                 ap = mySTUMP.MYSTUMP(T_A=ts1_value, m=subsequence_length, T_B=ts2_value)
                 data = ap
+            elif selected_algorithm == "STAMP":
+                ap = mySTAMP.MYSTAMP(T_A=ts1_value, m=subsequence_length, T_B=ts2_value)
+                data = ap
 
 
             seq_A_rect = None
@@ -284,7 +287,7 @@ elif selected == "Augmenting":
             first_occurrence = {col: True for col in df.columns}  # Track first occurrence for each column
 
             def highlight_min(val, col):
-                if val and len(val) > 2 and val[2] == min_values[col] and first_occurrence[col]:  # Ensure val has at least 3 elements
+                if val and len(val) > 2 and  min_values[col] is not None and val[2] == min_values[col] and first_occurrence[col]:  # Ensure val has at least 3 elements
                     first_occurrence[col] = False  # Mark the minimum as already highlighted
                     return f"background-color: {color_map_best[col]}"
                 return None  # Return None to keep the base color
@@ -345,11 +348,15 @@ elif selected == "Filtering":
                 ap = TD_Join(T_A=ts1, m=subsequence_length, T_B=ts2, Allen_relation=selected_relation)
             elif selected_algorithm == "STUMP":
                 ap = mySTUMP.MYSTUMP(T_A=ts1_value, m=subsequence_length, T_B=ts2_value, Allen_relation=selected_relation)
+            elif selected_algorithm == "STAMP":
+                ap = mySTAMP.MYSTAMP(T_A=ts1_value, m=subsequence_length, T_B=ts2_value, Allen_relation=selected_relation)
+
             if len(ap[selected_relation]) != 0:
+                print(f"Run with algorithm {selected_algorithm}\n", ap[selected_relation])
                 values = np.array([item[2] for item in ap[selected_relation]])
                 # Find the index of the minimum value
 
-                values = [item[2] for item in ap[selected_relation]]
+                # values = [item[2] for item in ap[selected_relation]]
                 # Find the index of the minimum value
                 index = min(range(len(values)), key=lambda i: values[i])
 
@@ -412,8 +419,9 @@ elif selected == "Filtering":
                 # Get minimum values for the column
                 min_values = get_min_values(df)
 
-                if selected_relation == "meets":
-                    print(min_values)
+                # if selected_relation == "meets":
+                #     print(min_values, selected_algorithm)
+
                 first_occurrence = {selected_relation: True}  # Track first occurrence for the column
 
                 # Function to highlight the minimum value

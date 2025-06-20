@@ -16,8 +16,8 @@ Follow the instructions at [https://docs.influxdata.com/influxdb/v2/install/](ht
 ### Create a env file for storing influxDB credentials
 Create a file named .env in the root directory of the project and add the following lines:
 ```bucket = ""
-org = ""
-token = ""
+org = "your-organization"
+token = "your-token"
 url = "http://localhost:8086"
 ```
 where you must create an organization ( the "database") in influxDB and the bucket (the "table") where the data will be stored.
