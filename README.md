@@ -1,5 +1,5 @@
 # TD-Join: Leveraging Temporal Patterns in Subsequence Joins
-This Website presents TD-Join, a Matrix Profile based tool for discovering recurrent temporal subsequences by enhacing Matrix Profile with temporal reasoning given by Allen's relations.
+This Website presents TD-Join, a novel tool for temporal reasoning on time series. TD-Join enhances time series subsequence joins by integrating Allen’s Algebra, a widely adopted framework for temporal reasoning. Our approach enables users to efficiently identify, query, and interpret temporal relationships over similar time series subsequences.
 
 ## Video
 {% include youtube.html id="fHMZUWnqYyQ" %}
@@ -31,5 +31,9 @@ The presentation layer is dedicated to displaying recurrent temporal patterns.
 ## Publication
 The paper is available at [https://doi.org/10.1145/3722212.3725137](https://doi.org/10.1145/3722212.3725137).
 This work has been accepted at [Sigmod 2025](https://2025.sigmod.org/index.shtml) demo track.
+
+## Authors
+Gianluca Rossi (Lyon 1 University and LIRIS), Riccardo Tommasini (Insa Lyon and LIRIS) and Angela Bonifati (Lyon 1 University, LIRIS and IUF).
+
 ## Acknowledgements
 This  work is funded by the French National Research Agency (ANR) under grant number [ANR-22-CE92-0025-01](https://anr.fr/Projet-ANR-22-CE92-0025).
